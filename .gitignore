@@ -1,0 +1,6 @@
+cache
+bitbake.lock
+environment-angstrom-*
+pseudodone
+build/*
+sources/*

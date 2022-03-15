@@ -1,0 +1,3 @@
+SANITY_VERSION 1
+TMPDIR /home/rex/miner/build/tmp-angstrom_v2013_06-eglibc
+SSTATE_DIR /home/rex/miner/build/sstate-cache
