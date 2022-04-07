@@ -19,7 +19,9 @@
 ,
 "api-listen" : true,
 "api-network" : true,
-"api-allow" : "W:0/0",
-"bitmain-freq" : "4:325:0c82",
+"bitmain-use-vil" : true,
+"api-groups" : "A:summary:devs:stats:pools:version",
+"api-allow" : "A:0/0,W:*",
+"bitmain-freq" : "525",
 "bitmain-voltage" : "0725"
 }

@@ -2,6 +2,15 @@
 #####################debug###
 echo "check mouted config"
 
+phy_ok=`dmesg | grep "davinci_mdio 4a101000.mdio: phy\[0\]: device 4a101000.mdio:00" | wc -l`
+if [ $phy_ok -eq 1 ];then
+    echo "PHY OK" > /tmp/PHY_STATS
+else
+    echo "PHT ERR" > /tmp/PHY_STATS
+    sleep 5s
+    reboot
+fi
+
 check0p3=`cat /etc/mtab | grep "mmcblk0p3"`
 #if [ $? -eq 0 ]; then
 	echo $check0p3
@@ -47,9 +56,6 @@ cp /config/dropbear /etc/default/dropbear
 # No configuration, create it!
 if [ ! -f /config/cgminer.conf ] ; then
     cp /etc/cgminer.conf.factory /config/cgminer.conf
-elif [ -z  "`cat /config/cgminer.conf | grep bitmain-voltage`" ] ; then
-    rm -rf /config/cgminer.conf                                        
-    cp -rf /etc/cgminer.conf.factory /config/cgminer.conf 
 fi
 ###########################
 
@@ -72,20 +78,10 @@ else
 fi
 ###########################
 
-#miner monitor
-if [ ! -f /config/minermonitor.conf ] ; then
-    cp /etc/minermonitor.conf.factory /config/minermonitor.conf
-fi
-##########################################
 
 #user setting
 if [ ! -f /config/user_setting ] ; then
     cp /etc/user_setting.factory /config/user_setting
 fi
 ##########################################
-
-#minerlink
-if [ ! -d /config/dataformatconfig ]; then
-   cp -rf /etc/dataformatconfig /config/
-fi
-#####################################################
+/etc/init.d/syslog start

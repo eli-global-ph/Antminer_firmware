@@ -1,4 +1,4 @@
-export IMAGE_BASENAME = "S3"
+export IMAGE_BASENAME = "antminer"
 IMAGE_INSTALL = " \
 	busybox \
 	base-files \

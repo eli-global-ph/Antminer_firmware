@@ -4,18 +4,131 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/bin/cgminer
 NAME=cgminer
 DESC="Cgminer daemon"
-CONFIG_NAME="/config/asic-freq.config"
-USER_SETTING="/config/user_setting"
+
 set -e
 #set -x
 test -x "$DAEMON" || exit 0
 
+# LTC miner
+
+# PLUG0: GPIO1_19: GPIO51
+# PLUG1: GPIO1_16: GPIO48
+# PLUG2: GPIO1_15: GPIO47
+# PLUG3: GPIO1_12: GPIO44
+if [ ! -d /sys/class/gpio/gpio51 ]; then
+    echo 51 > /sys/class/gpio/export
+    echo in > /sys/class/gpio/gpio51/direction
+fi
+if [ ! -d /sys/class/gpio/gpio48 ]; then
+    echo 48 > /sys/class/gpio/export
+    echo in > /sys/class/gpio/gpio48/direction
+fi
+if [ ! -d /sys/class/gpio/gpio47 ]; then
+    echo 47 > /sys/class/gpio/export
+    echo in > /sys/class/gpio/gpio47/direction
+fi
+if [ ! -d /sys/class/gpio/gpio44 ]; then
+    echo 44 > /sys/class/gpio/export
+    echo in > /sys/class/gpio/gpio44/direction
+fi
+
+# RST0: GPIO0_5:  GPIO5
+# RST1: GPIO0_4:  GPIO4
+# RST2: GPIO0_27: GPIO27
+# RST3: GPIO0_22: GPIO22
+if [ ! -d /sys/class/gpio/gpio5 ]; then
+    echo 5 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio5/direction
+    echo 1 > /sys/class/gpio/gpio5/value
+fi
+if [ ! -d /sys/class/gpio/gpio4 ]; then
+    echo 4 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio4/direction
+    echo 1 > /sys/class/gpio/gpio4/value
+fi
+if [ ! -d /sys/class/gpio/gpio27 ]; then
+    echo 27 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio27/direction
+    echo 1 > /sys/class/gpio/gpio27/value
+fi
+if [ ! -d /sys/class/gpio/gpio22 ]; then
+    echo 22 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio22/direction
+    echo 1 > /sys/class/gpio/gpio22/value
+fi
+
+# BEEP: GPIO0_20: GPIO20
+if [ ! -d /sys/class/gpio/gpio20 ]; then
+    echo 20 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio20/direction
+    echo 0 > /sys/class/gpio/gpio20/value
+fi
+
+# RED LED: GPIO1_13: GPIO45
+if [ ! -d /sys/class/gpio/gpio45 ]; then
+    echo 45 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio45/direction
+    echo 0 > /sys/class/gpio/gpio45/value
+fi
+
+# GREEN LED: GPIO0_23: GPIO23
+if [ ! -d /sys/class/gpio/gpio23 ]; then
+    echo 23 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio23/direction
+    echo 0 > /sys/class/gpio/gpio23/value
+fi
+
+# FAN_SPEED0: GPIO3_16: GPIO112
+if [ ! -d /sys/class/gpio/gpio112 ]; then
+    echo 112 > /sys/class/gpio/export
+    echo in > /sys/class/gpio/gpio112/direction
+    echo falling > /sys/class/gpio/gpio112/edge
+fi
+
+# FAN_SPEED1: GPIO3_14: GPIO110
+if [ ! -d /sys/class/gpio/gpio110 ]; then
+    echo 110 > /sys/class/gpio/export
+    echo in > /sys/class/gpio/gpio110/direction
+    echo falling > /sys/class/gpio/gpio110/edge
+fi
+
+# FAN_PWM: GPIO3_15: P9_29: EHRPWMoB
+if [ ! -d /sys/class/pwm/pwm1 ]; then
+    echo 1 > /sys/class/pwm/export
+    echo 100000 > /sys/class/pwm/pwm1/period_ns
+    echo 50000 > /sys/class/pwm/pwm1/duty_ns
+    echo 1 > /sys/class/pwm/pwm1/run
+fi
+
 do_start() {
+
+	NIC=eth0
+	MAC=`LANG=C ifconfig $NIC | awk '/HWaddr/{ print $5 }'`
+	#echo $MAC | tr '[a-z]' '[A-Z]'
+	upmac=`echo $MAC | tr '[a-z]' '[A-Z]'`
+	#echo $upmac
+	curti=`date "+%Y-%m-%d %H:%M:%S"`
+	#echo $curti
+
+	OUTPUT=/tmp/pic_mac
+	echo "${upmac:0:2}"" ${curti:2:2}" > $OUTPUT
+	echo "${upmac:3:2}"" ${curti:5:2}" >> $OUTPUT
+	echo "${upmac:6:2}"" ${curti:8:2}" >> $OUTPUT
+	echo "${upmac:9:2}"" ${curti:11:2}" >> $OUTPUT
+	echo "${upmac:12:2}"" ${curti:14:2}" >> $OUTPUT
+	echo "${upmac:15:2}"" ${curti:17:2}" >> $OUTPUT
+
+	# check network state
+	#network_ok=`ping -c 1 114.114.114.114 | grep " 0% packet loss" | wc -l`
+	#if [ $network_ok -eq 0 ];then
+	#    return
+	#fi
+
 	# gpio1_16 = 48 = net check LED
-	if [ ! -e /sys/class/gpio/gpio48 ]; then
-		echo 48 > /sys/class/gpio/export
-	fi
-	echo low > /sys/class/gpio/gpio48/direction
+	#if [ ! -e /sys/class/gpio/gpio48 ]; then
+	#	echo 48 > /sys/class/gpio/export
+	#fi
+	#echo low > /sys/class/gpio/gpio48/direction
 
 	gateway=$(route -n | grep 'UG[ \t]' | awk '{print $2}')
 	if [ x"" == x"$gateway" ]; then
@@ -28,47 +141,11 @@ do_start() {
 	    prs=0
 		echo "$gateway is reachable" 	
 	fi                    
-	#ping $gateway -W1 -c1 & > /dev/null
-	#prs=$?
-	if [ $prs = "0" ]; then
-		echo heartbeat > /sys/class/leds/beaglebone:green:usr3/trigger
-		echo 1 > /sys/class/gpio/gpio48/value	
-	else
-		echo none > /sys/class/leds/beaglebone:green:usr3/trigger
-		return
-	fi
-	sleep 5s
-	if [ -z  "`lsmod | grep bitmain_spi`"  ]; then
-		echo "No bitmain-asic"
-		insmod /lib/modules/`uname -r`/kernel/drivers/bitmain/bitmain_spi.ko
-	else
-		echo "Have bitmain-asic"
-		rmmod bitmain_spi.ko
-		sleep 1
-		insmod /lib/modules/`uname -r`/kernel/drivers/bitmain/bitmain_spi.ko fpga_ret_prnt=0 rx_st_prnt=0
-		#insmod /mnt/mmc1/bitmain_spi.ko fpga_ret_prnt=0 rx_st_prnt=0
-	fi
-	#control console printk level
-	#freq_value="`awk '{if($1 == "option" && $2=="\047freq_value\047") print $3}' $CONFIG_NAME | sed "s/'//g"`"
-	#chip_value=`awk '{if($1 == "option" && $2=="\047chip_freq\047") print $3}' $CONFIG_NAME | sed "s/'//g"`
-	#timeout=`awk '{if($1 == "option" && $2=="\047timeout\047") print $3}' $CONFIG_NAME | sed "s/'//g"`
-	freq_value=0782
-	chip_value=200
-	chip_num=40
-	freq_m=$(($chip_value * 1000))                                                                           
-	timeout=$((2 ** (32 - 8) * (256 / $chip_num) / freq_m / 64))                                             
-	echo $timeout
 
-	queue_value="`awk '{if($1 == "queue") print $2}' $USER_SETTING | sed "s/'//g"`"
-	echo " queue_vale=$queue_value"
-	if [ -z $queue_value ]; then
-		queue_value=8192
-	fi
 
-	#PARAMS="--bitmain-dev /dev/bitmain-asic --bitmain-options 115200:32:8:$timeout:$chip_value:$real_freq"
-	PARAMS="--bitmain-dev /dev/bitmain-asic --bitmain-options 115200:32:8:$timeout:$chip_value:$freq_value:0725 --bitmain-checkn2diff --bitmain-hwerror --version-file /usr/bin/compile_time --queue $queue_value"
+	PARAMS="--scrypt --version-file /usr/bin/compile_time "
 	echo PARAMS = $PARAMS
-	start-stop-daemon -b -S -x screen -- -S cgminer -t cgminer -m -d "$DAEMON" $PARAMS --api-listen --default-config /config/cgminer.conf
+	start-stop-daemon -b -S -x screen -- -S cgminer -t cgminer -m -d "$DAEMON" $PARAMS  --default-config /config/cgminer.conf -T
 	#cgminer $PARAMS -D --api-listen --default-config /config/cgminer.conf 2>&1 | tee log
 }
 

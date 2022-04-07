@@ -23,27 +23,9 @@ do_install_append() {
 	cd ${D}${sysconfdir}/rcS.d
 	ln -s ../init.d/ntpd S40ntpd
 	
-	if [ x"YES" == x"${Miner_Monitor}" ]; then
-	install -m 0755 ${WORKDIR}/minermonitor ${D}${sysconfdir}/init.d
-        update-rc.d -r ${D} minermonitor start 100 S .
-
-        install -m 0400 ${WORKDIR}/minermonitor.conf  ${D}${sysconfdir}/minermonitor.conf.factory
-        install -d ${D}${sysconfdir}/dataformatconfig
-	install -m 0400 ${WORKDIR}/dataformatconfig/*  ${D}${sysconfdir}/dataformatconfig/
-        #cp -rf ${WORKDIR}/dataformatconfig  ${D}${sysconfdir}/
 
 	install -d ${D}${base_sbindir}
-        install -m 0755 ${WORKDIR}/miner-m.sh ${D}${base_sbindir}/
-
-	#install -d ${D}${base_sbindir}
-        #install -m 0755 ${WORKDIR}/d-ddos-m.sh ${D}${base_sbindir}/
-        
-
-	fi
-
-        install -d ${D}${base_sbindir}
-        install -m 0755 ${WORKDIR}/auto_freq.sh ${D}${base_sbindir}/
-	install -m 0400 ${WORKDIR}/auto_freq.conf ${D}${sysconfdir}/auto_freq.conf.factory
+        install -m 0755 ${WORKDIR}/reset.sh ${D}${base_sbindir}/
 
 	install -m 0400 ${WORKDIR}/shadow.factory ${D}${sysconfdir}/shadow.factory
 	if [ x"C1" == x"${Miner_TYPE}" ]; then
@@ -66,15 +48,20 @@ do_install_append() {
 	elif [ x"S5+" == x"${Miner_TYPE}" ]; then
 		install -m 0400 ${WORKDIR}/network.conf.factory ${D}${sysconfdir}/network.conf.factory
 		install -m 0400 ${WORKDIR}/cgminer_s5p.conf.factory ${D}${sysconfdir}/cgminer.conf.factory
-
+	elif [ x"L3" == x"${Miner_TYPE}" ]; then
+		install -m 0400 ${WORKDIR}/pic.txt ${D}${base_sbindir}/
+		install -m 0400 ${WORKDIR}/network.conf.factory ${D}${sysconfdir}/network.conf.factory
+		install -m 0400 ${WORKDIR}/cgminer_l3.conf.factory ${D}${sysconfdir}/cgminer.conf.factory
+	elif [ x"L3+" == x"${Miner_TYPE}" ]; then
+		install -m 0400 ${WORKDIR}/pic.txt ${D}${base_sbindir}/
+		install -m 0400 ${WORKDIR}/network.conf.factory ${D}${sysconfdir}/network.conf.factory
+		install -m 0400 ${WORKDIR}/cgminer_l3.conf.factory ${D}${sysconfdir}/cgminer.conf.factory
 	else	
 		echo "AntMiner ${Miner_TYPE}" > ${WORKDIR}/user_defined_lcd.factory
 		install -m 0400 ${WORKDIR}/network.conf.factory ${D}${sysconfdir}/network.conf.factory
 		install -m 0400 ${WORKDIR}/cgminer.conf.factory ${D}${sysconfdir}/cgminer.conf.factory
 	fi
-#install -m 0400 ${WORKDIR}/cgminer.conf.factory ${D}${sysconfdir}/cgminer.conf.factory
-#install -m 0400 ${WORKDIR}/s3-asic-freq.config ${D}${sysconfdir}/asic-freq.config
-#install -m 0400 ${WORKDIR}/asic-freq.config ${D}${sysconfdir}/asic-freq.config
+
 	install -m 0400 ${WORKDIR}/user_defined_lcd.factory ${D}${sysconfdir}/user_defined_lcd.factory
 	install -m 0400 ${WORKDIR}/user_setting.factory ${D}${sysconfdir}/user_setting.factory
 
@@ -83,8 +70,8 @@ do_install_append() {
 	install -m 0755 ${WORKDIR}/miner_lcd.sh ${D}${base_sbindir}/minerlcd
 	install -d ${D}${bindir}
 	rm -rf ${D}${bindir}/compile_time
-	date > ${D}${bindir}/compile_time
-	echo "Antminer ${Miner_TYPE}" >> ${D}${bindir}/compile_time
+        echo "Thu May 11 10:42:49 CST 2017" > ${D}${bindir}/compile_time
+        echo "Antminer L3+" >> ${D}${bindir}/compile_time
 }
 
 SRC_URI_append = " file://mountdevtmpfs.sh"
@@ -98,9 +85,8 @@ SRC_URI_append = " file://cgminer_c2.conf.factory"
 SRC_URI_append = " file://cgminer_s4p.conf.factory"
 SRC_URI_append = " file://cgminer_s5.conf.factory"
 SRC_URI_append = " file://cgminer_s5p.conf.factory"
+SRC_URI_append = " file://cgminer_l3.conf.factory"
 SRC_URI_append = " file://cgminer_s2.conf.factory"
-#SRC_URI_append = " file://asic-freq.config"
-#SRC_URI_append = " file://s3-asic-freq.config"
 SRC_URI_append = " file://user_setting.factory"
 SRC_URI_append = " file://user_defined_lcd.factory"
 SRC_URI_append = " file://ntpdate.sh"
@@ -110,12 +96,14 @@ SRC_URI_append = " file://monitorcg"
 SRC_URI_append = " file://miner_lcd.sh"
 SRC_URI_append = " file://pgnand.sh"
 #SRC_URI_append = " file://d-ddos-m.sh"
-
+SRC_URI_append = " file://pic.txt"
 SRC_URI_append = " file://auto_freq.sh"
 SRC_URI_append = " file://auto_freq.conf"
+SRC_URI_append = " file://reset.sh"
 
 SRC_URI_append = " file://miner-m.sh"
 SRC_URI_append = " file://dataformatconfig"
 SRC_URI_append = " file://minermonitor.conf"
 SRC_URI_append = " file://minermonitor"
+
 

@@ -38,14 +38,14 @@ int interval_count=0;
 */
 void rg_off(void)
 {
-	system("echo low >/sys/class/gpio/gpio23/direction");
-	system("echo low >/sys/class/gpio/gpio45/direction");
+	system("echo 0 >/sys/class/gpio/gpio23/value");
+	system("echo 0 >/sys/class/gpio/gpio45/value");
 }
 
 void rg_on(void)
 {
-	system("echo high >/sys/class/gpio/gpio23/direction");
-	system("echo high >/sys/class/gpio/gpio45/direction");
+	system("echo 1 >/sys/class/gpio/gpio23/value");
+	system("echo 1 >/sys/class/gpio/gpio45/value");
 }
 
 //Key GPIO number 46
@@ -144,16 +144,16 @@ int success_action()
   }
 
   int i;
-  system("echo low > /sys/class/gpio/gpio20/direction");
+  system("echo 0 > /sys/class/gpio/gpio20/value");
   system("echo 1 > /sys/class/gpio/gpio20/value");
   usleep (200*1000);
   system("echo 0 > /sys/class/gpio/gpio20/value");
 
   for(i=0;i<3;i++)
   {
-    system("echo high >/sys/class/gpio/gpio23/direction");
+    system("echo 1 >/sys/class/gpio/gpio23/value");
     usleep (50*1000);
-    system("echo low >/sys/class/gpio/gpio23/direction");
+    system("echo 0 >/sys/class/gpio/gpio23/value");
     usleep (50*1000);
   }
 }
@@ -189,11 +189,10 @@ int failure_action()
 
   for(i=0;i<3;i++)
   {
-    system("echo low > /sys/class/gpio/gpio20/direction");
     system("echo 1 > /sys/class/gpio/gpio20/value");
-    system("echo low >/sys/class/gpio/gpio45/direction");
+    system("echo 1 >/sys/class/gpio/gpio45/value");
     usleep (50*1000);
-    system("echo high >/sys/class/gpio/gpio45/direction");
+    system("echo 0 >/sys/class/gpio/gpio45/value");
     system("echo 0 > /sys/class/gpio/gpio20/value");
     usleep (50*1000);
   }

@@ -1,0 +1,13 @@
+export SCRIPTS_BASE_VERSION=9
+export BBFETCH2=True
+export DISTRO="angstrom-v2013.06"
+export DISTRO_DIRNAME="angstrom_v2013_06"
+export OE_BUILD_DIR="/home/rex/antminer_firmware"
+export BUILDDIR="/home/rex/antminer_firmware"
+export OE_BUILD_TMPDIR="/home/rex/antminer_firmware/build/tmp-angstrom_v2013_06"
+export OE_SOURCE_DIR="/home/rex/antminer_firmware/sources"
+export OE_LAYERS_TXT="/home/rex/antminer_firmware/sources/layers.txt"
+export OE_BASE="/home/rex/antminer_firmware"
+export PATH="/home/rex/antminer_firmware/sources/openembedded-core/scripts:/home/rex/antminer_firmware/sources/bitbake/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games"
+export BB_ENV_EXTRAWHITE="MACHINE DISTRO TCLIBC TCMODE GIT_PROXY_COMMAND http_proxy ftp_proxy https_proxy all_proxy ALL_PROXY no_proxy SSH_AGENT_PID SSH_AUTH_SOCK BB_SRCREV_POLICY SDKMACHINE BB_NUMBER_THREADS"
+export BBPATH="/home/rex/antminer_firmware:/home/rex/antminer_firmware/sources/openembedded-core/meta"

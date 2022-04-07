@@ -12,13 +12,14 @@ do_install_append() {
     update-rc.d -r ${D} lighttpd start 60 S .
     install -m 0755 ${WORKDIR}/lighttpd.conf ${D}${sysconfdir}
     install -m 0755 ${WORKDIR}/lighttpd-htdigest.user ${D}${sysconfdir}
-    if [ x"YES" == x"${Miner_Monitor}" ]; then
-        cp -pr ${WORKDIR}/www_miner/* ${D}/www/pages
+    if [ x"L3" == x"${Miner_TYPE}" ]; then
+        cp -pr ${WORKDIR}/www-ltc/* ${D}/www/pages
+    elif [ x"L3+" == x"${Miner_TYPE}" ]; then
+        cp -pr ${WORKDIR}/www-ltc-p/* ${D}/www/pages
     else
-	cp -pr ${WORKDIR}/www/* ${D}/www/pages
+        cp -pr ${WORKDIR}/www/* ${D}/www/pages
     fi
-#mkdir ${D}/www/tmpl
-#   cp -pr ${WORKDIR}/tmpl/* ${D}/www/tmpl
+
 	if [ x"C1" == x"${Miner_TYPE}" ]; then
 		rm ${D}/www/pages/cgi-bin/minerAdvanced.cgi
 		mv ${D}/www/pages/cgi-bin/minerAdvanced_c1.cgi ${D}/www/pages/cgi-bin/minerAdvanced.cgi
@@ -34,8 +35,6 @@ do_install_append() {
 	elif [ x"S5+" == x"${Miner_TYPE}" ]; then
         	rm ${D}/www/pages/cgi-bin/minerAdvanced.cgi
         	mv ${D}/www/pages/cgi-bin/minerAdvanced_s5_p.cgi ${D}/www/pages/cgi-bin/minerAdvanced.cgi
-	else
-		echo "S4"
 	fi
 	rm ${D}/www/pages/cgi-bin/minerAdvanced_*.cgi
 }
@@ -44,3 +43,5 @@ SRC_URI_append = " file://lighttpd.conf"
 SRC_URI_append = " file://lighttpd-htdigest.user"
 SRC_URI_append = " file://www"
 SRC_URI_append = " file://www_miner"
+SRC_URI_append = " file://www-ltc"
+SRC_URI_append = " file://www-ltc-p"

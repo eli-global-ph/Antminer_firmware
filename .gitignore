@@ -1,0 +1,10 @@
+build
+cache
+bitbake.lock
+
+sources/downloads
+sources/meta-beagleboard
+sources/meta-linaro
+sources/meta-openembedded
+sources/meta-ti
+sources/openembedded-core

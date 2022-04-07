@@ -3,28 +3,17 @@
 # gpio 23 = DHCP Static key
 #ver = 1
 # gpio 27 = DHCP Static key
-dhcppin=27
-echo $dhcppin > /sys/class/gpio/export
-echo in > /sys/class/gpio/gpio$dhcppin/direction
-
 
 if [ ! -f /config/network.conf ] ; then
     cp /etc/network.conf.factory /config/network.conf
 fi
 
-# Read network configuration
-dhcp_key="`cat /sys/class/gpio/gpio$dhcppin/value`"
-if [ "dhcp_key" = "1" ] ; then
-	dhcp=true
-	hostname=antMiner
-elif [ -s /config/network.conf ] ; then
+if [ -s /config/network.conf ] ; then
     . /config/network.conf
 else
     dhcp=true
     hostname=antMiner
 fi
-
-echo $dhcppin > /sys/class/gpio/unexport
 
 if [ -n "$hostname" ] ; then
 	hostname $hostname

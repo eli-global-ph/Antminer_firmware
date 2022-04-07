@@ -15,21 +15,16 @@ IMAGE_INSTALL = " \
 	lighttpd \
 	dtc \
 	stunnel \
-	initc-bin \
 	openssl \
 	mtd-utils \
 	curl \
 	udev \
-	monitor-recobtn \
-	test-btn \
 	ntp \
 	ntpdate \
 	netbase \
 	avahi \
 	led-blink \
 	cgminer \
-	bitmain-spi-s3 \
-	bitmain-lcd \
 "
 #omap3-mkcard 			   
 #cgminer 
