@@ -1,10 +1,12 @@
 build
 cache
 bitbake.lock
-
+pseudodone
+sources/bitbake
 sources/downloads
 sources/meta-beagleboard
 sources/meta-linaro
 sources/meta-openembedded
 sources/meta-ti
 sources/openembedded-core
+sources/meta-angstrom
